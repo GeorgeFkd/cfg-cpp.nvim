@@ -1,6 +1,9 @@
 # Compiled Lua sources
 luac.out
 
+#C++ files
+build/
+.cache
 # luarocks build files
 *.src.rock
 *.zip
