@@ -3,8 +3,8 @@ local M = {}
 function M.check()
 	-- lua package.loaded['cfg_cpp.health'] = nil; vim.cmd('checkhealth cfg_cpp')
 	local plugin_dir = require("lazy.core.config").plugins["cfg-cpp.nvim"].dir
-	-- from the plugin_dir i can just get where the binary is and run it from here.
 	vim.health.ok("Plugin located at: " .. plugin_dir)
+	--TODO: make the clang path customisable
 	local result = vim.fn.system("clang --version")
 	if vim.v.shell_error == 0 then
 		vim.health.ok("clang executable:" .. "\n" .. result)

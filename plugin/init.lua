@@ -1,2 +1,0 @@
--- vim.notify("plugin cfg-cpp loaded")
--- print("Hello world from the plugin")
