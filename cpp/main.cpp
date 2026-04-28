@@ -28,6 +28,7 @@ public:
     CG.addToCallGraph(Context.getTranslationUnitDecl());
     llvm::ReversePostOrderTraversal<const CallGraph *> RPOT(&CG);
 
+    //TODO: also add to check what things are used in templates and added as dependencies
     for (const CallGraphNode *N : RPOT) {
       if (!N) {
         continue;
@@ -45,13 +46,17 @@ public:
       if (!ND) {
         continue;
       }
-
+      
+      //if i dont omit this the graph gets too big
       if (!SM.isInMainFile(ND->getLocation())) {
         continue;
       }
 
       std::string callerName = ND->getQualifiedNameAsString();
-
+    
+      if(callerName.find("std::") != std::string::npos){
+        continue;
+      }
       for (auto CI = N->begin(), CE = N->end(); CI != CE; ++CI) {
         if (!CI->Callee) {
           continue;
@@ -67,9 +72,8 @@ public:
           continue;
         }
         auto calleeName = CalleeND->getQualifiedNameAsString();
+          //TODO: make configurable the things to ignore
         edges.insert({callerName, calleeName});
-        // llvm::outs() << callerName << " -> "
-        //              << CalleeND->getQualifiedNameAsString() << "\n";
       }
     }
     llvm::outs() << "digraph callgraph {\n";
@@ -113,8 +117,8 @@ int main(int argc, const char **argv) {
                  OptionsParser.getSourcePathList());
 
   CallGraph CG;
-
-  Tool.run(std::make_unique<CallGraphActionFactory>(CG).get());
+  auto ActionFactory = std::make_unique<CallGraphActionFactory>(CG);
+  Tool.run(ActionFactory.get());
 
   return 0;
 }
